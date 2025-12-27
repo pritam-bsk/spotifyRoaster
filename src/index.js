@@ -30,6 +30,7 @@ app.get('/login', (req, res) => {
 
 app.get('/api/v1/spotify-callback', (req, res) => {
     console.log(req);
+    return res.send("#########Callback received#########");
 })
 
 app.listen(PORT, () => {
