@@ -14,7 +14,9 @@ app.use(express.urlencoded({ extended: true }));
 
 import userRouter from './routes/user.route.js';
 import spotifyCallbackRouter from './routes/spotifyCallback.route.js'
+
 app.use('/user', userRouter);
+app.use('/api/v1', spotifyCallbackRouter)
 
 export default app;
 
