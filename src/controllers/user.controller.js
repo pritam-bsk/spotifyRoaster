@@ -58,12 +58,12 @@ const spotifyCallback = asyncHandler(async (req, res) => {
     return res
         .cookie("access_token", accessToken, options)
         .cookie("refresh_token", refreshToken, options)
-        .redirect(process.env.APP_URL+'/home');
+        .redirect(process.env.APP_URL + '/home');
 })
 
 const userMe = asyncHandler(async (req, res) => {
     const accessToken = req.cookies.access_token;
-    if(!accessToken){
+    if (!accessToken) {
         throw new Error({ status: 401, message: "Access token not found. Please login." });
     }
     const userRes = await fetch("https://api.spotify.com/v1/me", {
@@ -79,4 +79,54 @@ const userMe = asyncHandler(async (req, res) => {
     });
 });
 
-export { userLogin, spotifyCallback, userMe };
+const topArtists = asyncHandler(async (req, res) => {
+    const response = await fetch(
+        "https://api.spotify.com/v1/me/top/artists?limit=10&time_range=medium_term",
+        {
+            headers: {
+                Authorization: `Bearer ${req.accessToken}`,
+            },
+        }
+    );
+    if (!response.ok) throw new Error({ status: 500, message: "failed to fetch top artists" })
+    const data = await response.json();
+    return res.status(200).json({
+        success: true,
+        data: data.items,
+    });
+});
+
+const topTracks = asyncHandler(async (req, res) => {
+    const response = await fetch(
+        "https://api.spotify.com/v1/me/top/tracks?limit=10",
+        {
+            headers: {
+                Authorization: `Bearer ${req.accessToken}`,
+            },
+        }
+    );
+    if (!response.ok) throw new Error({ status: 500, message: "failed to fetch top artists" })
+    const data = await response.json();
+    return res.status(200).json({
+        success: true,
+        data: data.items,
+    });
+});
+
+const mostRecentTracks = asyncHandler(async (req, res) => {
+    const response = await fetch(
+        "https://api.spotify.com/v1/me/player/recently-played?limit=20",
+        {
+            headers: {
+                Authorization: `Bearer ${req.accessToken}`,
+            },
+        }
+    );
+    if (!response.ok) throw new Error({ status: 500, message: "failed to fetch top artists" })
+    const data = await response.json();
+    return res.status(200).json({
+        success: true,
+        data: data.items,
+    });
+});
+export { userLogin, spotifyCallback, userMe, topArtists, topTracks, mostRecentTracks };
