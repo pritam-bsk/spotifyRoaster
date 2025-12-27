@@ -52,7 +52,8 @@ const spotifyCallback = asyncHandler(async (req, res) => {
     const refreshToken = tokenData.refresh_token;
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: "none"
     };
     return res
         .cookie("access_token", accessToken, options)
@@ -63,7 +64,7 @@ const spotifyCallback = asyncHandler(async (req, res) => {
 const userMe = asyncHandler(async (req, res) => {
     const accessToken = req.cookies.access_token;
     if(!accessToken){
-        return res.redirect(process.env.APP_URL+'/login');
+        throw new Error({ status: 401, message: "Access token not found. Please login." });
     }
     const userRes = await fetch("https://api.spotify.com/v1/me", {
         headers: {
