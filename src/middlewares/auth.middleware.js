@@ -1,4 +1,4 @@
-import { asyncHandler } from "../utils/asyncHandler.util"; 
+import { asyncHandler } from "../utils/asyncHandler.util.js"; 
 
 export const authenticateUser = asyncHandler(async (req, res, next) => {
     const accessToken = req.cookies.access_token;
