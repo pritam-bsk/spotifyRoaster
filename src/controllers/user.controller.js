@@ -50,13 +50,26 @@ const spotifyCallback = asyncHandler(async (req, res) => {
     const tokenData = await generateToken(code);
     const accessToken = tokenData.access_token;
     const refreshToken = tokenData.refresh_token;
+
+    const userRes = await fetch("https://api.spotify.com/v1/me", {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+
+    const user = await userRes.json();
     const options = {
         httpOnly: true,
         secure: true
     };
-    res.cookie("access_token", accessToken, options)
-    .cookie("refresh_token", refreshToken, options)
-    .redirect(process.env.APP_URL);
+    return res
+        .cookie("access_token", accessToken, options)
+        .cookie("refresh_token", refreshToken, options)
+        .json({
+            message: "OAuth success",
+            spotify_user_id: user.id,
+            display_name: user.display_name,
+        });
 })
 
 export { userLogin, spotifyCallback };
