@@ -90,10 +90,13 @@ const topArtists = asyncHandler(async (req, res) => {
     );
     if (!response.ok) throw new Error({ status: 500, message: "failed to fetch top artists" })
     const data = await response.json();
-    return res.status(200).json({
-        success: true,
-        data: data.items,
-    });
+    return res.json(
+        data.items.map(a => ({
+            name: a.name,
+            genres: a.genres,
+            popularity: a.popularity,
+        }))
+    );
 });
 
 const topTracks = asyncHandler(async (req, res) => {
@@ -107,10 +110,14 @@ const topTracks = asyncHandler(async (req, res) => {
     );
     if (!response.ok) throw new Error({ status: 500, message: "failed to fetch top artists" })
     const data = await response.json();
-    return res.status(200).json({
-        success: true,
-        data: data.items,
-    });
+    return res.json(
+        data.items.map(t => ({
+            name: t.name,
+            artist: t.artists[0].name,
+            popularity: t.popularity,
+            explicit: t.explicit,
+        }))
+    );
 });
 
 const mostRecentTracks = asyncHandler(async (req, res) => {
@@ -124,9 +131,12 @@ const mostRecentTracks = asyncHandler(async (req, res) => {
     );
     if (!response.ok) throw new Error({ status: 500, message: "failed to fetch top artists" })
     const data = await response.json();
-    return res.status(200).json({
-        success: true,
-        data: data.items,
-    });
+    return res.json(
+        data.items.map(i => ({
+            track: i.track.name,
+            artist: i.track.artists[0].name,
+            played_at: i.played_at,
+        }))
+    );
 });
 export { userLogin, spotifyCallback, userMe, topArtists, topTracks, mostRecentTracks };
