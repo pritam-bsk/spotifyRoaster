@@ -40,7 +40,7 @@ const spotifyCallback = asyncHandler(async (req, res) => {
             }),
         }
     );
-    tokenData = await tokenRes.json();
+    const tokenData = await tokenRes.json();
     res.send(tokenData);
 })
 
