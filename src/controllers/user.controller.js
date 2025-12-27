@@ -60,4 +60,22 @@ const spotifyCallback = asyncHandler(async (req, res) => {
         .redirect(process.env.APP_URL+'/home');
 })
 
-export { userLogin, spotifyCallback };
+const userMe = asyncHandler(async (req, res) => {
+    const accessToken = req.cookies.access_token;
+    if(!accessToken){
+        return res.redirect(process.env.APP_URL+'/login');
+    }
+    const userRes = await fetch("https://api.spotify.com/v1/me", {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    if (!userRes.ok) throw new Error({ status: 500, message: "failed to fetch user data" })
+    const userData = await userRes.json();
+    return res.status(200).json({
+        success: true,
+        data: userData,
+    });
+});
+
+export { userLogin, spotifyCallback, userMe };
