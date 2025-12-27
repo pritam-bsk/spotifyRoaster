@@ -13,10 +13,10 @@ app.use(cors({
 app.use(express.urlencoded({ extended: true }));
 
 import userRouter from './routes/user.route.js';
-import spotifyCallbackRouter from './routes/spotifyCallback.route.js'
+import CallbackRouter from './routes/spotifyCallback.route.js'
 
 app.use('/user', userRouter);
-app.use('/api/v1', spotifyCallbackRouter)
+app.use('/api/v1', CallbackRouter)
 
 export default app;
 

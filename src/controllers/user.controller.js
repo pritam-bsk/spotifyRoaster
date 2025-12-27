@@ -1,24 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.util.js";
 import 'dotenv/config'
 
-const userLogin = asyncHandler(async (req, res) => {
-    const SCOPES = [
-        "user-top-read",
-        "user-read-recently-played",
-        "user-read-email",
-    ].join(" ");
-    const params = new URLSearchParams({
-        response_type: "code",
-        client_id: process.env.SPOTIFY_CLIENT_ID,
-        scope: SCOPES,
-        redirect_uri: process.env.SPOTIFY_REDIRECT_URI,
-    });
-
-    res.redirect(`https://accounts.spotify.com/authorize?${params}`);
-});
-
-const spotifyCallback = asyncHandler(async (req, res) => {
-    const code = req.query.code;
+const generateToken = async (code) => {
     const tokenRes = await fetch(
         "https://accounts.spotify.com/api/token",
         {
@@ -40,8 +23,40 @@ const spotifyCallback = asyncHandler(async (req, res) => {
             }),
         }
     );
+    if (!tokenRes.ok) throw new Error({ status: 500, message: "failed to fetch access token" })
     const tokenData = await tokenRes.json();
-    res.send(tokenData);
+    return tokenData;
+}
+
+const userLogin = asyncHandler(async (req, res) => {
+    const SCOPES = [
+        "user-top-read",
+        "user-read-recently-played",
+        "user-read-email",
+    ].join(" ");
+    const params = new URLSearchParams({
+        response_type: "code",
+        client_id: process.env.SPOTIFY_CLIENT_ID,
+        scope: SCOPES,
+        redirect_uri: process.env.SPOTIFY_REDIRECT_URI,
+    });
+
+    res.redirect(`https://accounts.spotify.com/authorize?${params}`);
+});
+
+const spotifyCallback = asyncHandler(async (req, res) => {
+    const code = req.query.code;
+    if (!code) throw new Error({ status: 400, message: "Authorization code not found in query parameters" })
+    const tokenData = await generateToken(code);
+    const accessToken = tokenData.access_token;
+    const refreshToken = tokenData.refresh_token;
+    const options = {
+        httpOnly: true,
+        secure: true
+    };
+    res.cookie("access_token", accessToken, options)
+    .cookie("refresh_token", refreshToken, options)
+    .redirect(process.env.APP_URL);
 })
 
 export { userLogin, spotifyCallback };
