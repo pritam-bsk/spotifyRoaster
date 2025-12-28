@@ -1,6 +1,6 @@
 const fetchTopArtists = async (accessToken) => {
     const res = await fetch(
-        "https://api.spotify.com/v1/me/top/artists?limit=10&time_range=medium_term",
+        "https://api.spotify.com/v1/me/top/artists?limit=20&time_range=medium_term",
         {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -21,7 +21,7 @@ const fetchTopArtists = async (accessToken) => {
 
 const fetchTopTracks = async (accessToken) => {
     const res = await fetch(
-        "https://api.spotify.com/v1/me/top/tracks?limit=10",
+        "https://api.spotify.com/v1/me/top/tracks?limit=20",
         {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -43,7 +43,7 @@ const fetchTopTracks = async (accessToken) => {
 
 const fetchRecentTracks = async (accessToken) => {
     const res = await fetch(
-        "https://api.spotify.com/v1/me/player/recently-played?limit=20",
+        "https://api.spotify.com/v1/me/player/recently-played?limit=30",
         {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
