@@ -4,6 +4,7 @@ import cors from 'cors';
 import 'dotenv/config';
 
 const app = express();
+app.set("trust proxy", 1);
 
 app.use(express.static('public'));
 app.use(cookieParser());
