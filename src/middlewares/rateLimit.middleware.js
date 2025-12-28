@@ -1,8 +1,9 @@
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import 'dotenv/config';
 
 export const generateRoastLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,
-    max: 2,
+    max: process.env.LIMIT || 2,
     standardHeaders: true,
     legacyHeaders: false,
 
