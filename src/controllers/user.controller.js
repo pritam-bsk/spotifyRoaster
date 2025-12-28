@@ -1,5 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.util.js";
 import 'dotenv/config'
+import { userMe, fetchRecentTracks, fetchTopArtists, fetchTopTracks } from "../utils/spotify.util.js";
 
 const generateToken = async (code) => {
     const tokenRes = await fetch(
@@ -26,6 +27,10 @@ const generateToken = async (code) => {
     if (!tokenRes.ok) throw new Error({ status: 500, message: "failed to fetch access token" })
     const tokenData = await tokenRes.json();
     return tokenData;
+}
+
+const buildRoaster = ({ topArtists, topTracks, recentTracks }) => {
+    // const mainstreamScore = topArtists.
 }
 
 const userLogin = asyncHandler(async (req, res) => {
@@ -66,77 +71,56 @@ const userMe = asyncHandler(async (req, res) => {
     if (!accessToken) {
         throw new Error({ status: 401, message: "Access token not found. Please login." });
     }
-    const userRes = await fetch("https://api.spotify.com/v1/me", {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
-    if (!userRes.ok) throw new Error({ status: 500, message: "failed to fetch user data" })
-    const userData = await userRes.json();
-    return res.status(200).json({
-        success: true,
-        data: userData,
-    });
+    const data = await userMe(accessToken);
+    return res.json(data);
 });
 
 const topArtists = asyncHandler(async (req, res) => {
-    const response = await fetch(
-        "https://api.spotify.com/v1/me/top/artists?limit=10&time_range=medium_term",
-        {
-            headers: {
-                Authorization: `Bearer ${req.accessToken}`,
-            },
-        }
-    );
-    if (!response.ok) throw new Error({ status: 500, message: "failed to fetch top artists" })
-    const data = await response.json();
-    return res.json(
-        data.items.map(a => ({
-            name: a.name,
-            genres: a.genres,
-            popularity: a.popularity,
-        }))
-    );
+    const accessToken = req.cookies.access_token;
+    if (!accessToken) {
+        throw new Error({ status: 401, message: "Access token not found. Please login." });
+    }
+    const data = await fetchTopArtists(accessToken);
+    return res.json(data);
 });
 
 const topTracks = asyncHandler(async (req, res) => {
-    const response = await fetch(
-        "https://api.spotify.com/v1/me/top/tracks?limit=10",
-        {
-            headers: {
-                Authorization: `Bearer ${req.accessToken}`,
-            },
-        }
-    );
-    if (!response.ok) throw new Error({ status: 500, message: "failed to fetch top artists" })
-    const data = await response.json();
-    return res.json(
-        data.items.map(t => ({
-            name: t.name,
-            artist: t.artists[0].name,
-            popularity: t.popularity,
-            explicit: t.explicit,
-        }))
-    );
+    const accessToken = req.cookies.access_token;
+    if (!accessToken) {
+        throw new Error({ status: 401, message: "Access token not found. Please login." });
+    }
+    const data = await fetchTopTracks(accessToken);
+    return res.json(data);
 });
 
 const mostRecentTracks = asyncHandler(async (req, res) => {
-    const response = await fetch(
-        "https://api.spotify.com/v1/me/player/recently-played?limit=20",
-        {
-            headers: {
-                Authorization: `Bearer ${req.accessToken}`,
-            },
-        }
-    );
-    if (!response.ok) throw new Error({ status: 500, message: "failed to fetch top artists" })
-    const data = await response.json();
-    return res.json(
-        data.items.map(i => ({
-            track: i.track.name,
-            artist: i.track.artists[0].name,
-            played_at: i.played_at,
-        }))
-    );
+    const accessToken = req.cookies.access_token;
+    if (!accessToken) {
+        throw new Error({ status: 401, message: "Access token not found. Please login." });
+    }
+    const data = await fetchRecentTracks(accessToken);
+    return res.json(data);
 });
-export { userLogin, spotifyCallback, userMe, topArtists, topTracks, mostRecentTracks };
+
+const getRoastJSON = asyncHandler(async (req, res) => {
+    const accessToken = req.cookies.access_token;
+    if (!accessToken) {
+        throw new Error({ status: 401, message: "Access token not found. Please login." });
+    }
+    const topArtistsData = await fetchTopArtists(accessToken);
+    const topTracksData = await fetchTopTracks(accessToken);
+    const recentTracksData = await fetchRecentTracks(accessToken);
+
+    const roastData = {
+        topArtists: topArtistsData,
+        topTracks: topTracksData,
+        recentTracks: recentTracksData
+    };
+
+    const roastJSON = buildRoaster(roastData);
+
+    return res.json(roastJSON);
+});
+
+
+export { userLogin, spotifyCallback, userMe, topArtists, topTracks, mostRecentTracks, getRoastJSON };
