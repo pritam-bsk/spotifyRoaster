@@ -154,7 +154,7 @@ const spotifyCallback = asyncHandler(async (req, res) => {
     const userData = await userDetails(accessToken);
     const dbUser = await User.findOne({ spotify_user_id: userData.id })
     if (!dbUser) {
-        dbUser = await User.create({
+        await User.create({
             spotify_user_id: userData.id,
             display_name: userData.display_name,
             email: userData.email
@@ -231,14 +231,14 @@ const logout = asyncHandler((req, res) => {
         sameSite: "none"
     }
     return res
-    .clearCookie("access_token",options)
-    .clearCookie("refresh_token",options)
-    .status(200)
-    .json({
-        status: 200,
-        success: true,
-        message: "logged out successfully"
-    })
+        .clearCookie("access_token", options)
+        .clearCookie("refresh_token", options)
+        .status(200)
+        .json({
+            status: 200,
+            success: true,
+            message: "logged out successfully"
+        })
 })
 
 
