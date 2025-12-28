@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.util.js";
 import 'dotenv/config'
-import { userMe, fetchRecentTracks, fetchTopArtists, fetchTopTracks } from "../utils/spotify.util.js";
+import { userDetails, fetchRecentTracks, fetchTopArtists, fetchTopTracks } from "../utils/spotify.util.js";
 
 const generateToken = async (code) => {
     const tokenRes = await fetch(
@@ -30,7 +30,8 @@ const generateToken = async (code) => {
 }
 
 const buildRoaster = ({ topArtists, topTracks, recentTracks }) => {
-    // const mainstreamScore = topArtists.
+    const mainstreamScore = topArtists.filter(artist => artist.popularity >= 70).length/topArtists.length;
+
 }
 
 const userLogin = asyncHandler(async (req, res) => {
@@ -71,7 +72,7 @@ const userMe = asyncHandler(async (req, res) => {
     if (!accessToken) {
         throw new Error({ status: 401, message: "Access token not found. Please login." });
     }
-    const data = await userMe(accessToken);
+    const data = await userDetails(accessToken);
     return res.json(data);
 });
 

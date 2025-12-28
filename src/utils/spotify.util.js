@@ -62,7 +62,7 @@ const fetchRecentTracks = async (accessToken) => {
     }));
 };
 
-const userMe = async (accessToken) => {
+const userDetails = async (accessToken) => {
     const userRes = await fetch("https://api.spotify.com/v1/me", {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -74,7 +74,7 @@ const userMe = async (accessToken) => {
 }
 
 export {
-    userMe,
+    userDetails,
     fetchTopArtists,
     fetchTopTracks,
     fetchRecentTracks,
