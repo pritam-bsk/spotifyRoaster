@@ -115,7 +115,7 @@ const userLogin = asyncHandler(async (req, res) => {
 
 const spotifyCallback = asyncHandler(async (req, res) => {
     const code = req.query.code;
-    if (!code) throw new Error({ status: 400, message: "Authorization code not found in query parameters" })
+    if (!code) throw new Error({ status: 400, message: "Authorization code not found" })
     const tokenData = await generateToken(code);
     const accessToken = tokenData.access_token;
     const refreshToken = tokenData.refresh_token;
