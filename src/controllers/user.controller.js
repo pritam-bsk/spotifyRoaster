@@ -166,25 +166,27 @@ const mostRecentTracks = asyncHandler(async (req, res) => {
     return res.json(data);
 });
 
+const getRoastData = async (access_token) => {
+    const topArtistsData = await fetchTopArtists(accessToken);
+    const topTracksData = await fetchTopTracks(accessToken);
+    const recentTracksData = await fetchRecentTracks(accessToken);
+
+    return {
+        topArtists: topArtistsData,
+        topTracks: topTracksData,
+        recentTracks: recentTracksData
+    };
+}
+
 const getRoastJSON = asyncHandler(async (req, res) => {
     const accessToken = req.cookies.access_token;
     if (!accessToken) {
         throw new Error({ status: 401, message: "Access token not found. Please login." });
     }
-    const topArtistsData = await fetchTopArtists(accessToken);
-    const topTracksData = await fetchTopTracks(accessToken);
-    const recentTracksData = await fetchRecentTracks(accessToken);
-
-    const roastData = {
-        topArtists: topArtistsData,
-        topTracks: topTracksData,
-        recentTracks: recentTracksData
-    };
-
+    const roastData = getRoastData(accessToken);
     const roastJSON = buildRoaster(roastData);
-
     return res.json(roastJSON);
 });
 
 
-export { userLogin, spotifyCallback, userMe, topArtists, topTracks, mostRecentTracks, getRoastJSON };
+export { generateToken, getRoastData, buildRoaster, userLogin, spotifyCallback, userMe, topArtists, topTracks, mostRecentTracks, getRoastJSON };
