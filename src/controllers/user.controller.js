@@ -150,6 +150,15 @@ const spotifyCallback = asyncHandler(async (req, res) => {
         secure: true,
         sameSite: "none"
     };
+    const userData = await userDetails(accessToken);
+    const dbUser = await User.findOne({ spotify_user_id: userData.id })
+    if (!dbUser) {
+        dbUser = await User.create({
+            spotify_user_id: userData.id,
+            display_name: userData.display_name,
+            email: userData.email
+        })
+    }
     return res
         .cookie("access_token", accessToken, options)
         .cookie("refresh_token", refreshToken, options)
