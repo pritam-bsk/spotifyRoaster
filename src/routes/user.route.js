@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { userLogin, userMe, topTracks, topArtists, mostRecentTracks } from "../controllers/user.controller.js";
+import { getRoastJSON,userLogin, userMe, topTracks, topArtists, mostRecentTracks } from "../controllers/user.controller.js";
 import { authenticateUser } from '../middlewares/auth.middleware.js'
 
 const userRouter = Router();
@@ -9,6 +9,7 @@ userRouter.route('/me').get(authenticateUser, userMe);
 userRouter.route('/top-tracks').get(authenticateUser, topTracks);
 userRouter.route('/top-artists').get(authenticateUser, topArtists);
 userRouter.route('/recent-tracks').get(authenticateUser, mostRecentTracks);
+userRouter.route('/roast-json').get(authenticateUser, getRoastJSON);
 
 
 export default userRouter;
