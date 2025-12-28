@@ -30,8 +30,71 @@ const generateToken = async (code) => {
 }
 
 const buildRoaster = ({ topArtists, topTracks, recentTracks }) => {
-    const mainstreamScore = topArtists.filter(artist => artist.popularity >= 70).length/topArtists.length;
+    const mainstreamScore = topArtists.length == 0 ? 0 : topArtists.filter(artist => artist.popularity >= 70).length / topArtists.length;
+    const geners = {};
+    topArtists.forEach(artist => {
+        artist.genres.forEach(genre => {
+            if (geners[genre]) {
+                geners[genre]++;
+            } else {
+                geners[genre] = 1;
+            }
+        });
+    });
+    const [topGenre, obsessionLevel] = Object.entries(geners).sort((a, b) => b[1] - a[1])[0] || ["", 0];
 
+    const explicitRatio = topTracks.length === 0 ? 0 : topTracks.filter(t => t.explicit).length / topTracks.length;
+
+    const nightOwlRatio =
+        recentTracks.length === 0
+            ? 0
+            : recentTracks.filter(r => {
+                const h = new Date(r.played_at).getHours();
+                return h >= 22 || h <= 4;
+            }).length / recentTracks.length;
+
+    const recentArtistCounts = {};
+    recentTracks.forEach(r => {
+        recentArtistCounts[r.artist] =
+            (recentArtistCounts[r.artist] || 0) + 1;
+    });
+
+    const maxRepeatArtist =
+        Object.entries(recentArtistCounts).sort((a, b) => b[1] - a[1])[0];
+
+    const emotionalLoop = maxRepeatArtist && maxRepeatArtist[1] >= 3;
+
+    const moodKeywords = {
+        sad: ["sad", "cry", "lonely", "hurt", "pain", "heart"],
+        angry: ["rage", "hate", "fight", "kill"],
+        chill: ["lofi", "chill", "slow", "dream"],
+    };
+
+    let moodScore = {
+        sad: 0,
+        angry: 0,
+        chill: 0,
+    };
+
+    recentTracks.forEach(r => {
+        const name = r.track.toLowerCase();
+        for (const mood in moodKeywords) {
+            if (moodKeywords[mood].some(k => name.includes(k))) {
+                moodScore[mood]++;
+            }
+        }
+    });
+    const dominantMood = Object.entries(moodScore).sort((a, b) => b[1] - a[1])[0]?.[0] || "neutral";
+
+    return {
+        mainstreamRatio: mainstreamScore,
+        explicitRatio: explicitRatio,
+        topGenre: topGenre || "unknown",
+        obsessionLevel: obsessionLevel || 0,
+        dominantMood,
+        nightOwlRatio,
+        emotionalLoop,
+    };
 }
 
 const userLogin = asyncHandler(async (req, res) => {
