@@ -157,7 +157,8 @@ const spotifyCallback = asyncHandler(async (req, res) => {
         await User.create({
             spotify_user_id: userData.id,
             display_name: userData.display_name,
-            email: userData.email
+            email: userData.email,
+            image_url: userData.images?.[0]?.url || null
         })
     }
     return res

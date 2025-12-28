@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
     email: { type: String },
     top_artist: { type: String },
     top_track: { type: String },
+    image_url: { type: String }
 }, { timestamps: true });
 
 export const User = mongoose.model('User', userSchema);
