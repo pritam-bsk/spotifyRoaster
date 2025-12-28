@@ -48,6 +48,12 @@ export const authenticateUser = asyncHandler(async (req, res, next) => {
         req.accessToken = newAccessToken;
     } else {
         req.accessToken = accessToken;
+        const user = await test.json();
+        req.user = {
+            id: user.id,
+            display_name: user.display_name,
+            email: user.email,
+        };
     }
     next();
 });

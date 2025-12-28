@@ -64,16 +64,42 @@ const buildRoaster = ({ topArtists, topTracks, recentTracks }) => {
 
     const emotionalLoop = maxRepeatArtist && maxRepeatArtist[1] >= 3;
 
-    const moodKeywords = {
-        sad: ["sad", "cry", "lonely", "hurt", "pain", "heart"],
-        angry: ["rage", "hate", "fight", "kill"],
-        chill: ["lofi", "chill", "slow", "dream"],
+    const MOOD_KEYWORDS = {
+        sad: [
+            "sad", "cry", "lonely", "hurt", "pain", "tears", "broken", "heartbreak", "miss", "lost",
+            "dard", "judai", "akela", "rota", "aansoo", "bewafa", "tanha", "yaadein", "adhura",
+            "aashiqui", "dil toota", "gum", "zakhm",
+            "kosto", "bedona", "dukho", "eka", "chokher jol", "bhanga", "mon kharap",
+            "hariye", "biroho", "priyo", "bhalobasha nei"
+        ],
+
+        angry: [
+            "rage", "hate", "fight", "kill", "angry", "mad", "fire", "revenge",
+            "gussa", "nafrat", "ladayi", "badla", "junoon", "dushman", "tufaan",
+            "rag", "ghrina", "jhogra", "protishodh", "agune", "bidroho"
+        ],
+
+        chill: [
+            "lofi", "chill", "slow", "dream", "calm", "vibe", "soft", "ambient", "bye", "relax",
+            "shanti", "thanda", "dheemi", "komol", "nishshobdo", "moner shanti", "halka",
+            "sukoon", "shaant", "raahat", "thandak", "khamoshi", "dheere",
+            "bishakto", "shanto", "niribilli", "ghum", "halka", "dhire", "niramish", "shital", "madhur",
+            "komol", "mild", "soothing", "peaceful", "monkey", "easy"
+        ],
+
+        romantic: [
+            "love", "romantic", "passion", "desire", "affection", "romance", "crush",
+            "ishq", "mohabbat", "pyaar", "junoon", "dil", "saath", "mehboob", "janam",
+            "bhalobasha", "prem", "valobasha", "moner manush", "tumi", "ami", "tune", "baarish", "senorita"
+        ]
     };
+
 
     let moodScore = {
         sad: 0,
         angry: 0,
         chill: 0,
+        romantic: 0,
     };
 
     recentTracks.forEach(r => {
