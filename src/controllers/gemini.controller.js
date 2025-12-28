@@ -50,6 +50,9 @@ const generateRoast = asyncHandler(async (req, res) => {
             })
         }
     );
+    if(!resp.ok){
+        throw new Error({status:500, message:"Failed to generate roast"})
+    }
 
     const data = await resp.json();
     const textRes = data.candidates[0].content.parts[0].text;
