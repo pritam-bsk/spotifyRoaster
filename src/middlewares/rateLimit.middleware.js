@@ -1,4 +1,5 @@
 import rateLimit from "express-rate-limit";
+import app from '../app.js';
 
 app.set("trust proxy", 1);
 const generateRoastLimiter = rateLimit({
