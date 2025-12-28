@@ -164,7 +164,7 @@ const spotifyCallback = asyncHandler(async (req, res) => {
     return res
         .cookie("access_token", accessToken, options)
         .cookie("refresh_token", refreshToken, options)
-        .redirect(process.env.APP_URL + '/home');
+        .redirect(process.env.APP_URL);
 })
 
 const userMe = asyncHandler(async (req, res) => {
