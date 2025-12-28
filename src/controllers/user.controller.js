@@ -1,6 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.util.js";
 import 'dotenv/config'
 import { userDetails, fetchRecentTracks, fetchTopArtists, fetchTopTracks } from "../utils/spotify.util.js";
+import { User } from "../models/user.model.js";
 
 const generateToken = async (code) => {
     const tokenRes = await fetch(
@@ -223,5 +224,23 @@ const getRoastJSON = asyncHandler(async (req, res) => {
     return res.json(roastJSON);
 });
 
+const logout = asyncHandler((req, res) => {
+    const options = {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none"
+    }
+    return res
+    .clearCookie("access_token",options)
+    .clearCookie("refresh_token",options)
+    .status(200)
+    .json({
+        status: 200,
+        success: true,
+        message: "logged out successfully"
+    })
+})
 
-export { generateToken, getRoastData, buildRoaster, userLogin, spotifyCallback, userMe, topArtists, topTracks, mostRecentTracks, getRoastJSON };
+
+
+export { logout, generateToken, getRoastData, buildRoaster, userLogin, spotifyCallback, userMe, topArtists, topTracks, mostRecentTracks, getRoastJSON };
