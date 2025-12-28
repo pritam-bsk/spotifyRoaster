@@ -167,9 +167,9 @@ const mostRecentTracks = asyncHandler(async (req, res) => {
 });
 
 const getRoastData = async (access_token) => {
-    const topArtistsData = await fetchTopArtists(accessToken);
-    const topTracksData = await fetchTopTracks(accessToken);
-    const recentTracksData = await fetchRecentTracks(accessToken);
+    const topArtistsData = await fetchTopArtists(access_token);
+    const topTracksData = await fetchTopTracks(access_token);
+    const recentTracksData = await fetchRecentTracks(access_token);
 
     return {
         topArtists: topArtistsData,
