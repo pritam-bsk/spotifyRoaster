@@ -1,20 +1,20 @@
-import rateLimit from "express-rate-limit";
-import app from '../app.js';
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 
-const generateRoastLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000 * 24,
+export const generateRoastLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
     max: 2,
-    message: {
-        success: false,
-        error: "Too many roasts. Even the AI needs a break."
-    },
     standardHeaders: true,
     legacyHeaders: false,
+
     keyGenerator: (req) => {
-    if (req.user?.id) {
-      return `spotify:${req.user.id}`;
+        if (req.spotifyUser?.id) {
+            return `spotify:${req.spotifyUser.id}`;
+        }
+        return ipKeyGenerator(req);
+    },
+
+    message: {
+        success: false,
+        error: "Roast limit hit. Reflect on your music choices."
     }
-    return req.ip;
-  },
 });
-export { generateRoastLimiter };
