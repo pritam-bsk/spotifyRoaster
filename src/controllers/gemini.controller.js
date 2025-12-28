@@ -36,7 +36,7 @@ const generateRoast = asyncHandler(async (req, res) => {
     const roastData = getRoastData(accessToken);
     const roastJSON = buildRoaster(roastData);
     const promt = genaratePromt(roastJSON)
-    const res = await fetch(
+    const resp = await fetch(
         `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
         {
             method: "POST",
@@ -51,7 +51,7 @@ const generateRoast = asyncHandler(async (req, res) => {
         }
     );
 
-    const data = await res.json();
+    const data = await resp.json();
     const textRes = data.candidates[0].content.parts[0].text;
     return res.json(
         {
