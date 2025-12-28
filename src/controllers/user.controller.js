@@ -104,8 +104,8 @@ const buildRoaster = ({ topArtists, topTracks, recentTracks }) => {
 
     recentTracks.forEach(r => {
         const name = r.track.toLowerCase();
-        for (const mood in moodKeywords) {
-            if (moodKeywords[mood].some(k => name.includes(k))) {
+        for (const mood in MOOD_KEYWORDS) {
+            if (MOOD_KEYWORDS[mood].some(k => name.includes(k))) {
                 moodScore[mood]++;
             }
         }
