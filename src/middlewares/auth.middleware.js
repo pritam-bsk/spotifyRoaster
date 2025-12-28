@@ -1,4 +1,5 @@
 import { asyncHandler } from "../utils/asyncHandler.util.js";
+import { User } from "../models/user.model.js";
 
 const refreshAccessToken = asyncHandler(async (refreshToken) => {
     const res = await fetch("https://accounts.spotify.com/api/token", {
@@ -49,11 +50,15 @@ export const authenticateUser = asyncHandler(async (req, res, next) => {
     } else {
         req.accessToken = accessToken;
         const user = await test.json();
-        req.user = {
-            id: user.id,
-            display_name: user.display_name,
-            email: user.email,
-        };
+        const dbUser = await User.findOne({ spotify_user_id: user.id })
+        if(!dbUser){
+            dbUser = await User.create({
+                spotify_user_id: user.id,
+                display_name: user.display_name,
+                email: user.email
+            })
+        }
+        req.user = dbUser;
     }
     next();
 });
