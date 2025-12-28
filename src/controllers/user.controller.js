@@ -183,7 +183,7 @@ const getRoastJSON = asyncHandler(async (req, res) => {
     if (!accessToken) {
         throw new Error({ status: 401, message: "Access token not found. Please login." });
     }
-    const roastData = getRoastData(accessToken);
+    const roastData = await getRoastData(accessToken);
     const roastJSON = buildRoaster(roastData);
     return res.json(roastJSON);
 });
