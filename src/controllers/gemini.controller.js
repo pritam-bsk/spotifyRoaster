@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { asyncHandler } from '../utils/asyncHandler.util.js';
-import { getRoastData,buildRoaster } from './user.controller.js';
+import { getRoastData, buildRoaster } from './user.controller.js';
 
 const genaratePromt = (profile) => {
     return `
@@ -26,6 +26,23 @@ Rules:
 
 Start immediately. Destroy this taste.
 `;
+};
+
+const callGemini = async (model, prompt) => {
+    return await fetch(
+        `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [
+                    {
+                        parts: [{ text: prompt }]
+                    }
+                ]
+            })
+        }
+    )
 }
 
 const generateRoast = asyncHandler(async (req, res) => {
@@ -36,22 +53,21 @@ const generateRoast = asyncHandler(async (req, res) => {
     const roastData = await getRoastData(accessToken);
     const roastJSON = buildRoaster(roastData);
     const promt = genaratePromt(roastJSON)
-    const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-        {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [
-                    {
-                        parts: [{ text: promt }]
-                    }
-                ]
-            })
+
+    const models = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.5-flash-lite", 
+        "gemini-2.0-flash", "models/gemini-2.0-flash-001", "models/gemini-2.0-flash-lite-001"];
+    let resp;
+    for (const model of models) {
+        try {
+            console.log(`Trying model: ${model}`);
+            resp = await callGemini(model, promt);
+            if (resp.ok) break;
+        } catch (error) {
+            console.error(`Model ${model} failed:`, error.message);
         }
-    );
-    if(!resp.ok){
-        throw new Error({status:500, message:"Failed to generate roast"})
+    }
+    if (!resp || !resp.ok) {
+        throw new Error({ status: 500, message: "Failed to generate roast" });
     }
 
     const data = await resp.json();
