@@ -16,6 +16,7 @@ const fetchTopArtists = async (accessToken) => {
         name: a.name,
         genres: a.genres,
         popularity: a.popularity,
+        profile_img: a.images[2]?.url || null,
     }));
 };
 
@@ -33,11 +34,13 @@ const fetchTopTracks = async (accessToken) => {
 
     const data = await res.json();
 
+
     return data.items.map(t => ({
         name: t.name,
         artist: t.artists[0].name,
         popularity: t.popularity,
         explicit: t.explicit,
+        album_img: t.album.images[2]?.url || null,
     }));
 };
 
@@ -59,6 +62,7 @@ const fetchRecentTracks = async (accessToken) => {
         track: i.track.name,
         artist: i.track.artists[0].name,
         played_at: i.played_at,
+        album_img: i.track.album.images[2]?.url || null,
     }));
 };
 
@@ -70,7 +74,12 @@ const userDetails = async (accessToken) => {
     });
     if (!userRes.ok) throw new Error("Failed to fetch user data");
     const userData = await userRes.json();
-    return userData;
+    return {
+        id: userData.id,
+        display_name: userData.display_name,
+        email: userData.email,
+        image_url: userData.images?.[0]?.url || null
+    };
 }
 
 export {

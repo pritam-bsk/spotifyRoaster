@@ -55,7 +55,8 @@ export const authenticateUser = asyncHandler(async (req, res, next) => {
             dbUser = await User.create({
                 spotify_user_id: user.id,
                 display_name: user.display_name,
-                email: user.email
+                email: user.email,
+                image_url: user.image_url
             });
         }
         req.user = dbUser;
