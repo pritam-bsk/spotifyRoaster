@@ -6,6 +6,6 @@ const userRouter = Router();
 
 userRouter.route('/login').get(userLogin);
 userRouter.route('/me').get(authenticateUser, userMe);
-userRouter.route('/logout').post(logout);
+userRouter.route('/logout').get(logout);
 
 export default userRouter;
