@@ -49,58 +49,6 @@ const callGemini = async (model, prompt) => {
     )
 }
 
-// const generateRoast = asyncHandler(async (req, res) => {
-//     const accessToken = req.accessToken || req.cookies.access_token;
-//     if (!accessToken) {
-//         const error = new Error("Access token not found. Please login.");
-//         error.status = 401;
-//         throw error;
-//     }
-//     const roastData = await getRoastData(accessToken);
-//     const roastJSON = buildRoaster(roastData);
-//     const promt = genaratePromt(roastJSON)
-
-//     const models = [
-//         "gemini-2.5-flash",
-//         "gemini-2.5-pro",
-//         "gemini-2.5-flash-lite",
-//         "gemini-2.0-flash",
-//         "gemini-2.0-flash-001",
-//         "gemini-2.0-flash-lite-001"
-//     ];
-//     let resp;
-//     for (const model of models) {
-//         try {
-//             console.log(`Trying model: ${model}`);
-//             resp = await callGemini(model, promt);
-
-//             if (!resp.ok) {
-//                 const errText = await resp.text();
-//                 console.error(`Model ${model} failed:`, errText);
-//                 continue;
-//             }
-
-//             break;
-//         } catch (err) {
-//             console.error(`Model ${model} crashed:`, err.message);
-//         }
-//     }
-//     if (!resp || !resp.ok) {
-//         throw new Error({ status: 500, message: "Failed to generate roast" });
-//     }
-
-
-//     const data = await resp.json();
-//     const textRes = data.candidates[0].content.parts[0].text;
-//     return res.json(
-//         {
-//             status: 200,
-//             success: true,
-//             text: textRes
-//         }
-//     )
-// });
-
 const generateRoast = asyncHandler(async (req, res) => {
     const accessToken = req.cookies.access_token;
     if (!accessToken) {
@@ -109,22 +57,28 @@ const generateRoast = asyncHandler(async (req, res) => {
     const roastData = await getRoastData(accessToken);
     const roastJSON = buildRoaster(roastData);
     const prompt = genaratePromt(roastJSON)
-    const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-pro:generateContent?key=${process.env.GEMINI_API_KEY}`,
-        {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [
-                    {
-                        parts: [{ text: prompt }]
-                    }
-                ]
-            })
-        }
-    );
+    const resp = await callGemini("gemini-2.5-flash", prompt);
+    if (!resp.ok) {
+        const error = new Error("Failed to generate roast");
+        error.status = 500;
+        throw error;
+    }
 
-    const data = await resp.json();
+    let data = await resp.json();
+    if (data.error) {
+        const resp2 = await callGemini("gemini-2.5-pro", prompt);
+        if (!resp2.ok) {
+            const error = new Error("Failed to generate roast");
+            error.status = 500;
+            throw error;
+        }
+        data = await resp2.json();
+    }
+    if (data.error) {
+        const error = new Error(data.error.message || "Failed to generate roast");
+        error.status = data.error.code || 500;
+        throw error;
+    }
     const textRes = data.candidates[0].content.parts[0].text;
     return res.json(
         {
