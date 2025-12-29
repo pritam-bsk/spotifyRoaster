@@ -151,14 +151,20 @@ const spotifyCallback = asyncHandler(async (req, res) => {
         secure: true,
         sameSite: "none"
     };
+
+    const topAritst = await fetchTopArtists(accessToken);
+    const topTrack = await fetchTopTracks(accessToken);
+
     const userData = await userDetails(accessToken);
     const dbUser = await User.findOne({ spotify_user_id: userData.id })
     if (!dbUser) {
         await User.create({
             spotify_user_id: userData.id,
-            display_name: userData.display_name,
             email: userData.email,
-            image_url: userData.image_url
+            display_name: userData.display_name, //update url when call /user/me
+            image_url: userData.image_url, //update url when call /user/me
+            top_artist: topAritst[0]?.name || "", //update when call /top-artists
+            top_track: topTrack[0]?.name || "", //update when call /top-tracks
         })
     }
     return res

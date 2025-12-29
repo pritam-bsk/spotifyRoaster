@@ -60,7 +60,6 @@ const fetchRecentTracks = async (accessToken) => {
     if (!res.ok) throw new Error("Failed to fetch recent tracks");
 
     const data = await res.json();
-
     return data.items.map(i => ({
         name: i.track.name,
         id: i.track.id,
