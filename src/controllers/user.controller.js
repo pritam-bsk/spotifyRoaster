@@ -235,12 +235,6 @@ const logout = asyncHandler((req, res) => {
         .clearCookie("access_token", options)
         .clearCookie("refresh_token", options)
         .status(200)
-        .json({
-            status: 200,
-            success: true,
-            message: "logged out successfully"
-        })
-        .redirect(process.env.APP_URL);
 })
 
 
