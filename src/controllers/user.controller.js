@@ -240,6 +240,7 @@ const logout = asyncHandler((req, res) => {
             success: true,
             message: "logged out successfully"
         })
+        .redirect(process.env.APP_URL);
 })
 
 
