@@ -146,11 +146,20 @@ const userLogin = asyncHandler(async (req, res) => {
 
 const spotifyCallback = asyncHandler(async (req, res) => {
     const code = req.query.code;
+    const error_param = req.query.error;
+
+    if (error_param) {
+        console.error("Spotify OAuth error:", error_param);
+        const error = new Error(`Spotify authorization failed: ${error_param}`);
+        error.status = 403;
+        throw error;
+    }
+
     if (!code) {
         const error = new Error("Authorization code not found in query parameters");
-        error.status = 402;
+        error.status = 400;
         throw error;
-    }    
+    }
     const tokenData = await generateToken(code);
     const accessToken = tokenData.access_token;
     const refreshToken = tokenData.refresh_token;
