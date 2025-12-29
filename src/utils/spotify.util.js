@@ -8,7 +8,11 @@ const fetchTopArtists = async (accessToken) => {
         }
     );
 
-    if (!res.ok) throw new Error("Failed to fetch top artists");
+    if (!res.ok){
+        const error = new Error("Failed to fetch top artists");
+        error.status = res.status || 500;
+        throw error;
+    }
 
     const data = await res.json();
 
@@ -31,7 +35,11 @@ const fetchTopTracks = async (accessToken) => {
         }
     );
 
-    if (!res.ok) throw new Error("Failed to fetch top tracks");
+    if (!res.ok){
+        const error = new Error("Failed to fetch top tracks");
+        error.status = res.status || 500;
+        throw error;
+    }
 
     const data = await res.json();
 
@@ -57,7 +65,11 @@ const fetchRecentTracks = async (accessToken) => {
         }
     );
 
-    if (!res.ok) throw new Error("Failed to fetch recent tracks");
+    if (!res.ok){
+        const error = new Error("Failed to fetch recent tracks");
+        error.status = res.status || 500;
+        throw error;
+    }
 
     const data = await res.json();
     return data.items.map(i => ({
@@ -76,7 +88,11 @@ const userDetails = async (accessToken) => {
             Authorization: `Bearer ${accessToken}`,
         },
     });
-    if (!userRes.ok) throw new Error("Failed to fetch user data");
+    if (!userRes.ok){
+        const error = new Error("Failed to fetch user data");
+        error.status = userRes.status || 500;
+        throw error;
+    }
     const userData = await userRes.json();
     return {
         id: userData.id,

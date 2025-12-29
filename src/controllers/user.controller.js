@@ -25,7 +25,11 @@ const generateToken = async (code) => {
             }),
         }
     );
-    if (!tokenRes.ok) throw new Error({ status: 500, message: "failed to fetch access token" })
+    if (!tokenRes.ok) {
+        const error = new Error("Failed to generate token");
+        error.status = tokenRes.status || 513;
+        throw error;
+    }
     const tokenData = await tokenRes.json();
     return tokenData;
 }
@@ -142,7 +146,11 @@ const userLogin = asyncHandler(async (req, res) => {
 
 const spotifyCallback = asyncHandler(async (req, res) => {
     const code = req.query.code;
-    if (!code) throw new Error({ status: 400, message: "Authorization code not found" })
+    if (!code) {
+        const error = new Error("Authorization code not found in query parameters");
+        error.status = 402;
+        throw error;
+    }    
     const tokenData = await generateToken(code);
     const accessToken = tokenData.access_token;
     const refreshToken = tokenData.refresh_token;
@@ -177,7 +185,7 @@ const userMe = asyncHandler(async (req, res) => {
     const accessToken = req.accessToken || req.cookies.access_token;
     if (!accessToken) {
         const error = new Error("Access token not found. Please login.");
-        error.status = 401;
+        error.status = 405;
         throw error;
     }
     const data = await userDetails(accessToken);
@@ -188,7 +196,7 @@ const topArtists = asyncHandler(async (req, res) => {
     const accessToken = req.accessToken || req.cookies.access_token;
     if (!accessToken) {
         const error = new Error("Access token not found. Please login.");
-        error.status = 401;
+        error.status = 406;
         throw error;
     }
     const data = await fetchTopArtists(accessToken);
@@ -199,7 +207,7 @@ const topTracks = asyncHandler(async (req, res) => {
     const accessToken = req.accessToken || req.cookies.access_token;
     if (!accessToken) {
         const error = new Error("Access token not found. Please login.");
-        error.status = 401;
+        error.status = 407;
         throw error;
     }
     const data = await fetchTopTracks(accessToken);
@@ -210,7 +218,7 @@ const mostRecentTracks = asyncHandler(async (req, res) => {
     const accessToken = req.accessToken || req.cookies.access_token;
     if (!accessToken) {
         const error = new Error("Access token not found. Please login.");
-        error.status = 401;
+        error.status = 408;
         throw error;
     }
     const data = await fetchRecentTracks(accessToken);
@@ -233,7 +241,7 @@ const getRoastJSON = asyncHandler(async (req, res) => {
     const accessToken = req.accessToken || req.cookies.access_token;
     if (!accessToken) {
         const error = new Error("Access token not found. Please login.");
-        error.status = 401;
+        error.status = 409;
         throw error;
     }
 

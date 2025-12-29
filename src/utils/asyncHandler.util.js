@@ -7,6 +7,7 @@ export const asyncHandler = function(func){
                 .json({
                     success: false,
                     message: error.message,
+                    status: error.status || 500
                 })
         }
     }

@@ -19,8 +19,11 @@ const refreshAccessToken = asyncHandler(async (refreshToken) => {
         }),
     });
 
-    if (!res.ok) throw new Error({ status: 500, message: "Failed to refresh token" });
-
+    if (!res.ok) {
+        const error = new Error("Failed to refresh access token");
+        error.status = res.status || 500;
+        throw error;
+    }
     return res.json();
 });
 
