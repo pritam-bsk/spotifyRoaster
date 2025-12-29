@@ -104,7 +104,7 @@ const buildRoaster = ({ topArtists, topTracks, recentTracks }) => {
     };
 
     recentTracks.forEach(r => {
-        const name = r.track.toLowerCase();
+        const name = r.name.toLowerCase();
         for (const mood in MOOD_KEYWORDS) {
             if (MOOD_KEYWORDS[mood].some(k => name.includes(k))) {
                 moodScore[mood]++;
@@ -236,9 +236,17 @@ const getRoastJSON = asyncHandler(async (req, res) => {
         error.status = 401;
         throw error;
     }
-    const roastData = await getRoastData(accessToken);
-    const roastJSON = buildRoaster(roastData);
-    return res.json(roastJSON);
+
+    try {
+        const roastData = await getRoastData(accessToken);
+        const roastJSON = buildRoaster(roastData);
+        return res.json(roastJSON);
+    } catch (err) {
+        console.error("Error in getRoastJSON:", err);
+        const error = new Error(err.message || "Failed to generate roast data");
+        error.status = 500;
+        throw error;
+    }
 });
 
 const logout = asyncHandler((req, res) => {
