@@ -60,21 +60,35 @@ const generateRoast = asyncHandler(async (req, res) => {
     const roastJSON = buildRoaster(roastData);
     const promt = genaratePromt(roastJSON)
 
-    const models = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.5-flash-lite", 
-        "gemini-2.0-flash", "models/gemini-2.0-flash-001", "models/gemini-2.0-flash-lite-001"];
+    const models = [
+        "gemini-2.5-flash",
+        "gemini-2.5-pro",
+        "gemini-2.5-flash-lite",
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-001",
+        "gemini-2.0-flash-lite-001"
+    ];
     let resp;
     for (const model of models) {
         try {
             console.log(`Trying model: ${model}`);
             resp = await callGemini(model, promt);
-            if (resp.ok) break;
-        } catch (error) {
-            console.error(`Model ${model} failed:`, error.message);
+
+            if (!resp.ok) {
+                const errText = await resp.text();
+                console.error(`Model ${model} failed:`, errText);
+                continue;
+            }
+
+            break;
+        } catch (err) {
+            console.error(`Model ${model} crashed:`, err.message);
         }
     }
     if (!resp || !resp.ok) {
         throw new Error({ status: 500, message: "Failed to generate roast" });
     }
+
 
     const data = await resp.json();
     const textRes = data.candidates[0].content.parts[0].text;
