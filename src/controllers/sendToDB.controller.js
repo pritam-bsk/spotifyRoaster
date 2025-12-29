@@ -1,4 +1,4 @@
-import { asyncHandler } from "../utils/asyncHandler.util";
+import { asyncHandler } from "../utils/asyncHandler.util.js";
 import { User } from "../models/user.model.js";
 
 export const exportAllUser = asyncHandler(async (req, res) => {
