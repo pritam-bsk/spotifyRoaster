@@ -50,9 +50,11 @@ const callGemini = async (model, prompt) => {
 }
 
 const generateRoast = asyncHandler(async (req, res) => {
-    const accessToken = req.cookies.access_token;
+    const accessToken = req.accessToken || req.cookies.access_token;
     if (!accessToken) {
-        throw new Error({ status: 401, message: "Access token not found. Please login." });
+        const error = new Error("Access token not found. Please login.");
+        error.status = 401;
+        throw error;
     }
     const roastData = await getRoastData(accessToken);
     const roastJSON = buildRoaster(roastData);
