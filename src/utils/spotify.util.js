@@ -17,6 +17,7 @@ const fetchTopArtists = async (accessToken) => {
         genres: a.genres,
         popularity: a.popularity,
         profile_img: a.images[2]?.url || null,
+        followers: a.followers.total,
     }));
 };
 
@@ -37,10 +38,12 @@ const fetchTopTracks = async (accessToken) => {
 
     return data.items.map(t => ({
         name: t.name,
+        id: t.id,
         artist: t.artists[0].name,
         popularity: t.popularity,
         explicit: t.explicit,
         album_img: t.album.images[2]?.url || null,
+        time_ms: t.duration_ms,
     }));
 };
 
@@ -59,10 +62,12 @@ const fetchRecentTracks = async (accessToken) => {
     const data = await res.json();
 
     return data.items.map(i => ({
-        track: i.track.name,
+        name: i.track.name,
+        id: i.track.id,
         artist: i.track.artists[0].name,
         played_at: i.played_at,
         album_img: i.track.album.images[2]?.url || null,
+        time_ms: i.track.duration_ms,
     }));
 };
 
