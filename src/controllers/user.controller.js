@@ -174,36 +174,44 @@ const spotifyCallback = asyncHandler(async (req, res) => {
 })
 
 const userMe = asyncHandler(async (req, res) => {
-    const accessToken = req.cookies.access_token;
+    const accessToken = req.accessToken || req.cookies.access_token;
     if (!accessToken) {
-        throw new Error({ status: 401, message: "Access token not found. Please login." });
+        const error = new Error("Access token not found. Please login.");
+        error.status = 401;
+        throw error;
     }
     const data = await userDetails(accessToken);
     return res.json(data);
 });
 
 const topArtists = asyncHandler(async (req, res) => {
-    const accessToken = req.cookies.access_token;
+    const accessToken = req.accessToken || req.cookies.access_token;
     if (!accessToken) {
-        throw new Error({ status: 401, message: "Access token not found. Please login." });
+        const error = new Error("Access token not found. Please login.");
+        error.status = 401;
+        throw error;
     }
     const data = await fetchTopArtists(accessToken);
     return res.json(data);
 });
 
 const topTracks = asyncHandler(async (req, res) => {
-    const accessToken = req.cookies.access_token;
+    const accessToken = req.accessToken || req.cookies.access_token;
     if (!accessToken) {
-        throw new Error({ status: 401, message: "Access token not found. Please login." });
+        const error = new Error("Access token not found. Please login.");
+        error.status = 401;
+        throw error;
     }
     const data = await fetchTopTracks(accessToken);
     return res.json(data);
 });
 
 const mostRecentTracks = asyncHandler(async (req, res) => {
-    const accessToken = req.cookies.access_token;
+    const accessToken = req.accessToken || req.cookies.access_token;
     if (!accessToken) {
-        throw new Error({ status: 401, message: "Access token not found. Please login." });
+        const error = new Error("Access token not found. Please login.");
+        error.status = 401;
+        throw error;
     }
     const data = await fetchRecentTracks(accessToken);
     return res.json(data);
@@ -222,9 +230,11 @@ const getRoastData = async (access_token) => {
 }
 
 const getRoastJSON = asyncHandler(async (req, res) => {
-    const accessToken = req.cookies.access_token;
+    const accessToken = req.accessToken || req.cookies.access_token;
     if (!accessToken) {
-        throw new Error({ status: 401, message: "Access token not found. Please login." });
+        const error = new Error("Access token not found. Please login.");
+        error.status = 401;
+        throw error;
     }
     const roastData = await getRoastData(accessToken);
     const roastJSON = buildRoaster(roastData);
