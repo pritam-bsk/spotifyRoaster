@@ -20,15 +20,15 @@ User listening profile:
 - Emotional loop: ${profile.emotionalLoop}
 
 Rules:
-- Write exactly 5 sentences.
+- Write exactly 3 sentences. Write it short and punchy.
 - Use simple language.
 - Use contractions.
 - Use slang.
-- Use humor.
 - Use cultural references.
 - Make it sound like a stand-up comedy roast.
+- Do NOT mention the data points explicitly.
 
-Generate the roast now.
+Roast the user with hard words now.
 `;
 };
 
