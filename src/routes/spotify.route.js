@@ -16,6 +16,6 @@ router.route('/roast-json').get(authenticateUser, getRoastJSON);
 
 
 router.route('/generate-roast').post(authenticateUser, generateRoastLimiter, generateRoast)
-router.route('/get-db-users').post(authenticateUser, exportAllUser);
+router.route('/get-db-users').post(exportAllUser);
 
 export default router;
